@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  @font-face {
+    font-family: 'Amiri';
+    src: url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
+  }
+}
+
+.font-arabic {
+  font-family: 'Amiri', serif;
+}
+
+:root {
+  --transition-duration: 0.2s;
+}
+
+* {
+  transition: background-color var(--transition-duration),
+              border-color var(--transition-duration),
+              color var(--transition-duration);
+}
