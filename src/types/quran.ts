@@ -4,10 +4,21 @@ export interface Verse {
   translation: string;
   tafsir: string;
   audioUrl: string;
+  tajweed?: string;
   surah?: number;
 }
 
 export interface Surah {
+  number: number;
+  name: string;
+  nameArabic: string;
+  englishName: string;
+  englishNameTranslation: string;
+  numberOfAyahs: number;
+  revelationType: string;
+}
+
+export interface SurahInfo {
   number: number;
   name: string;
   nameArabic: string;
@@ -31,6 +42,8 @@ export interface Bookmark {
   timestamp: string;
 }
 
+export type ReadingMode = 'arabic-only' | 'with-translation' | 'with-tajweed';
+
 export interface QuranState {
   currentSurah: number;
   currentVerse: number;
@@ -43,7 +56,10 @@ export interface QuranState {
   isLoading: boolean;
   error: string | null;
   isSidebarOpen: boolean;
+  currentSurahInfo: SurahInfo | null;
   audioPlayer: AudioPlayer;
+  filteredSurahs: Surah[];
+  readingMode: ReadingMode;
   toggleSidebar: () => void;
   setCurrentSurah: (surah: number) => Promise<void>;
   setCurrentVerse: (verse: number) => void;
@@ -56,4 +72,5 @@ export interface QuranState {
   playAudio: (verseIndex: number, autoPlay?: boolean) => void;
   pauseAudio: () => void;
   toggleAutoPlay: () => void;
+  setReadingMode: (mode: ReadingMode) => void;
 }

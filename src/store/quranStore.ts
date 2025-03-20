@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { QuranState } from '../types/quran';
+import type { QuranState, ReadingMode } from '../types/quran';
 import { fetchSurah, fetchJuz, fetchSurahList } from '../services/quranAPI';
 
 export const useQuranStore = create<QuranState>()(
@@ -17,12 +17,16 @@ export const useQuranStore = create<QuranState>()(
       isLoading: false,
       error: null,
       isSidebarOpen: true,
+      currentSurahInfo: null,
+      readingMode: 'with-translation',
       audioPlayer: {
         isPlaying: false,
         currentAudio: null,
         currentVerseIndex: -1,
         isAutoPlaying: false
       },
+
+      filteredSurahs: [],
 
       toggleSidebar: () => set(state => ({ isSidebarOpen: !state.isSidebarOpen })),
 
@@ -33,6 +37,15 @@ export const useQuranStore = create<QuranState>()(
           set({ 
             currentSurah: surah,
             currentVerses: surahData.verses,
+            currentSurahInfo: {
+              number: surahData.number,
+              name: surahData.name,
+              nameArabic: surahData.nameArabic,
+              englishName: surahData.name,
+              englishNameTranslation: surahData.nameTranslation,
+              numberOfAyahs: surahData.verses.length,
+              revelationType: surahData.revelationType
+            },
             isLoading: false 
           });
         } catch (error) {
@@ -42,7 +55,16 @@ export const useQuranStore = create<QuranState>()(
 
       setCurrentVerse: (verse: number) => set({ currentVerse: verse }),
       
-      setSearchQuery: (query: string) => set({ searchQuery: query }),
+      setSearchQuery: (query: string) => {
+        const normalizedQuery = query.toLowerCase();
+        set((state) => ({
+          searchQuery: query,
+          filteredSurahs: state.surahs.filter((surah) =>
+            surah.englishName.toLowerCase().includes(normalizedQuery) ||
+            surah.number.toString().includes(normalizedQuery)
+          )
+        }));
+      },
       
       setView: async (view: 'surah' | 'juz') => {
         set({ view, isLoading: true, error: null });
@@ -105,7 +127,10 @@ export const useQuranStore = create<QuranState>()(
       initializeSurahList: async () => {
         try {
           const surahList = await fetchSurahList();
-          set({ surahs: surahList });
+          set({ 
+            surahs: surahList,
+            filteredSurahs: surahList 
+          });
         } catch (error) {
           set({ error: 'Failed to load surah list' });
         }
@@ -169,7 +194,9 @@ export const useQuranStore = create<QuranState>()(
         } else {
           state.playAudio(state.audioPlayer.currentVerseIndex !== -1 ? state.audioPlayer.currentVerseIndex : 0, true);
         }
-      }
+      },
+
+      setReadingMode: (mode: ReadingMode) => set({ readingMode: mode })
     }),
     {
       name: 'quran-store',
@@ -178,6 +205,7 @@ export const useQuranStore = create<QuranState>()(
         currentSurah: state.currentSurah,
         selectedJuz: state.selectedJuz,
         view: state.view,
+        readingMode: state.readingMode
       }),
     }
   )
