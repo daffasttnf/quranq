@@ -1,7 +1,14 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { QuranState, ReadingMode } from '../types/quran';
+import type { QuranState, ReadingMode, Settings } from '../types/quran';
 import { fetchSurah, fetchJuz, fetchSurahList } from '../services/quranAPI';
+import { toPng } from 'html-to-image';
+
+const defaultSettings: Settings = {
+  font: 'Amiri',
+  reciter: 'ar.alafasy',
+  fontSize: 32
+};
 
 export const useQuranStore = create<QuranState>()(
   persist(
@@ -19,6 +26,7 @@ export const useQuranStore = create<QuranState>()(
       isSidebarOpen: true,
       currentSurahInfo: null,
       readingMode: 'with-translation',
+      settings: defaultSettings,
       audioPlayer: {
         isPlaying: false,
         currentAudio: null,
@@ -33,7 +41,7 @@ export const useQuranStore = create<QuranState>()(
       setCurrentSurah: async (surah: number) => {
         set({ isLoading: true, error: null });
         try {
-          const surahData = await fetchSurah(surah);
+          const surahData = await fetchSurah(surah, get().settings.reciter);
           set({ 
             currentSurah: surah,
             currentVerses: surahData.verses,
@@ -70,10 +78,10 @@ export const useQuranStore = create<QuranState>()(
         set({ view, isLoading: true, error: null });
         try {
           if (view === 'surah') {
-            const surahData = await fetchSurah(get().currentSurah);
+            const surahData = await fetchSurah(get().currentSurah, get().settings.reciter);
             set({ currentVerses: surahData.verses });
           } else {
-            const juzVerses = await fetchJuz(get().selectedJuz);
+            const juzVerses = await fetchJuz(get().selectedJuz, get().settings.reciter);
             set({ currentVerses: juzVerses });
           }
           set({ isLoading: false });
@@ -85,7 +93,7 @@ export const useQuranStore = create<QuranState>()(
       setSelectedJuz: async (juz: number) => {
         set({ isLoading: true, error: null });
         try {
-          const juzVerses = await fetchJuz(juz);
+          const juzVerses = await fetchJuz(juz, get().settings.reciter);
           set({ 
             selectedJuz: juz,
             currentVerses: juzVerses,
@@ -196,7 +204,36 @@ export const useQuranStore = create<QuranState>()(
         }
       },
 
-      setReadingMode: (mode: ReadingMode) => set({ readingMode: mode })
+      setReadingMode: (mode: ReadingMode) => set({ readingMode: mode }),
+
+      updateSettings: (newSettings: Partial<Settings>) => 
+        set((state) => ({
+          settings: { ...state.settings, ...newSettings }
+        })),
+
+      shareVerse: async (verse: Verse, surahNumber: number) => {
+        const node = document.createElement('div');
+        node.className = 'bg-gradient-to-br from-emerald-500 to-teal-600 p-8 rounded-lg text-white';
+        node.innerHTML = `
+          <div class="text-right mb-4 font-arabic text-4xl leading-loose">${verse.text}</div>
+          <div class="text-lg mb-2">${verse.translation}</div>
+          <div class="text-sm opacity-75">QS ${surahNumber}:${verse.number}</div>
+          <div class="text-xs mt-4 opacity-50">Shared via QuranQ</div>
+        `;
+        document.body.appendChild(node);
+
+        try {
+          const dataUrl = await toPng(node);
+          const link = document.createElement('a');
+          link.download = `quran-${surahNumber}-${verse.number}.png`;
+          link.href = dataUrl;
+          link.click();
+        } catch (error) {
+          console.error('Error sharing verse:', error);
+        }
+
+        document.body.removeChild(node);
+      }
     }),
     {
       name: 'quran-store',
@@ -205,7 +242,8 @@ export const useQuranStore = create<QuranState>()(
         currentSurah: state.currentSurah,
         selectedJuz: state.selectedJuz,
         view: state.view,
-        readingMode: state.readingMode
+        readingMode: state.readingMode,
+        settings: state.settings
       }),
     }
   )

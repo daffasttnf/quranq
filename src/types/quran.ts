@@ -4,7 +4,6 @@ export interface Verse {
   translation: string;
   tafsir: string;
   audioUrl: string;
-  tajweed?: string;
   surah?: number;
 }
 
@@ -42,7 +41,15 @@ export interface Bookmark {
   timestamp: string;
 }
 
-export type ReadingMode = 'arabic-only' | 'with-translation' | 'with-tajweed';
+export type ReadingMode = 'arabic-only' | 'with-translation';
+
+export type Reciter = 'ar.alafasy' | 'ar.abdurrahmaansudais' | 'ar.hudhaify' | 'ar.mahermuaiqly' | 'ar.minshawi';
+
+export interface Settings {
+  font: string;
+  reciter: Reciter;
+  fontSize: number;
+}
 
 export interface QuranState {
   currentSurah: number;
@@ -60,6 +67,7 @@ export interface QuranState {
   audioPlayer: AudioPlayer;
   filteredSurahs: Surah[];
   readingMode: ReadingMode;
+  settings: Settings;
   toggleSidebar: () => void;
   setCurrentSurah: (surah: number) => Promise<void>;
   setCurrentVerse: (verse: number) => void;
@@ -73,4 +81,6 @@ export interface QuranState {
   pauseAudio: () => void;
   toggleAutoPlay: () => void;
   setReadingMode: (mode: ReadingMode) => void;
+  updateSettings: (settings: Partial<Settings>) => void;
+  shareVerse: (verse: Verse, surahNumber: number) => Promise<void>;
 }

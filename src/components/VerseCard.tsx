@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MessageSquare, Bookmark, Play, Pause, ChevronDown, ChevronUp, PencilLine, Volume2 } from 'lucide-react';
+import { MessageSquare, Bookmark, Play, Pause, ChevronDown, ChevronUp, PencilLine, Volume2, Share2 } from 'lucide-react';
 import { useQuranStore } from '../store/quranStore';
 import type { Verse } from '../types/quran';
 import { cn } from '../lib/utils';
@@ -18,7 +18,9 @@ export function VerseCard({ verse, surahNumber, index }: VerseCardProps) {
     playAudio, 
     pauseAudio, 
     audioPlayer,
-    readingMode
+    readingMode,
+    settings,
+    shareVerse
   } = useQuranStore();
   
   const [showTafsir, setShowTafsir] = useState(false);
@@ -44,6 +46,15 @@ export function VerseCard({ verse, surahNumber, index }: VerseCardProps) {
     }
     return () => clearInterval(progressInterval);
   }, [isPlaying, audioPlayer.currentAudio]);
+
+  useEffect(() => {
+    if (isPlaying) {
+      const element = document.getElementById(`verse-${index}`);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  }, [isPlaying, index]);
 
   const handleAudioClick = () => {
     if (isPlaying) {
@@ -82,7 +93,7 @@ export function VerseCard({ verse, surahNumber, index }: VerseCardProps) {
       <div className="flex justify-between items-start mb-4">
         <div className="flex items-center gap-2">
           <span className="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 text-sm font-medium px-2.5 py-0.5 rounded">
-            {surahNumber}:{verse.number}
+            {verse.surah || surahNumber}:{verse.number}
           </span>
           {isPlaying && (
             <div className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
@@ -135,6 +146,12 @@ export function VerseCard({ verse, surahNumber, index }: VerseCardProps) {
           >
             <PencilLine className="h-5 w-5" />
           </button>
+          <button
+            onClick={() => shareVerse(verse, surahNumber)}
+            className="p-1.5 rounded-lg text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400"
+          >
+            <Share2 className="h-5 w-5" />
+          </button>
         </div>
       </div>
 
@@ -172,7 +189,13 @@ export function VerseCard({ verse, surahNumber, index }: VerseCardProps) {
       )}
 
       <div className="relative">
-        <p className="text-right mb-4 font-arabic text-3xl leading-loose">
+        <p 
+          className="text-right mb-4 font-arabic leading-loose"
+          style={{
+            fontFamily: settings.font,
+            fontSize: `${settings.fontSize}px`
+          }}
+        >
           {verse.text}
         </p>
         {isPlaying && (
@@ -187,14 +210,6 @@ export function VerseCard({ verse, surahNumber, index }: VerseCardProps) {
         <p className="text-gray-600 dark:text-gray-300 mb-4">
           {verse.translation}
         </p>
-      )}
-
-      {readingMode === 'with-tajweed' && verse.tajweed && (
-        <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            <span className="font-medium">Tajwid:</span> {verse.tajweed}
-          </p>
-        </div>
       )}
 
       <div className="border-t dark:border-gray-700 pt-4">
