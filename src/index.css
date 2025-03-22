@@ -4,8 +4,8 @@
 
 @layer base {
   @font-face {
-    font-family: 'Amiri';
-    src: url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
+    font-family: 'KFGQPC Uthmanic Script HAFS';
+    src: url('https://fonts.qurancomplex.gov.sa/wp-content/uploads/2020/12/KFGQPC-Uthmanic-Script-HAFS-Regular.ttf') format('truetype');
   }
   @font-face {
     font-family: 'Scheherazade New';
@@ -65,4 +65,22 @@
 
 .dark ::-webkit-scrollbar-thumb:hover {
   background: #64748b;
+}
+
+/* Reading Modes */
+.reading-mode-arabic-only {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  direction: rtl;
+}
+
+.reading-mode-arabic-only .verse {
+  flex: 0 0 auto;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+.reading-mode-with-translation .verse {
+  margin-bottom: 1rem;
 }

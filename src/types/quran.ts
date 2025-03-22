@@ -43,12 +43,13 @@ export interface Bookmark {
 
 export type ReadingMode = 'arabic-only' | 'with-translation';
 
-export type Reciter = 'ar.alafasy' | 'ar.abdurrahmaansudais' | 'ar.hudhaify' | 'ar.mahermuaiqly' | 'ar.minshawi';
+export type Reciter = 'coming.soon';
 
 export interface Settings {
   font: string;
   reciter: Reciter;
   fontSize: number;
+  language: string;
 }
 
 export interface QuranState {

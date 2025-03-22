@@ -1,8 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { MessageSquare, Bookmark, Play, Pause, ChevronDown, ChevronUp, PencilLine, Volume2, Share2 } from 'lucide-react';
-import { useQuranStore } from '../store/quranStore';
-import type { Verse } from '../types/quran';
-import { cn } from '../lib/utils';
+import React, { useState, useEffect } from "react";
+import {
+  Bookmark,
+  Play,
+  Pause,
+  PencilLine,
+  Volume2,
+  Share2,
+} from "lucide-react";
+import { useQuranStore } from "../store/quranStore";
+import type { Verse } from "../types/quran";
+import { cn } from "../lib/utils";
 
 interface VerseCardProps {
   verse: Verse;
@@ -11,34 +18,37 @@ interface VerseCardProps {
 }
 
 export function VerseCard({ verse, surahNumber, index }: VerseCardProps) {
-  const { 
-    bookmarks, 
-    toggleBookmark, 
+  const {
+    bookmarks,
+    toggleBookmark,
     updateBookmarkNote,
-    playAudio, 
-    pauseAudio, 
+    playAudio,
+    pauseAudio,
     audioPlayer,
     readingMode,
     settings,
-    shareVerse
+    shareVerse,
   } = useQuranStore();
-  
-  const [showTafsir, setShowTafsir] = useState(false);
+
   const [showNoteInput, setShowNoteInput] = useState(false);
-  const [note, setNote] = useState('');
+  const [note, setNote] = useState("");
   const [audioProgress, setAudioProgress] = useState(0);
-  
+
   const bookmark = bookmarks.find(
     (b) => b.surah === surahNumber && b.verse === verse.number
   );
-  
-  const isPlaying = audioPlayer.currentVerseIndex === index && audioPlayer.isPlaying;
+
+  const isPlaying =
+    audioPlayer.currentVerseIndex === index && audioPlayer.isPlaying;
 
   useEffect(() => {
     let progressInterval: number;
     if (isPlaying && audioPlayer.currentAudio) {
       progressInterval = window.setInterval(() => {
-        const progress = (audioPlayer.currentAudio!.currentTime / audioPlayer.currentAudio!.duration) * 100;
+        const progress =
+          (audioPlayer.currentAudio!.currentTime /
+            audioPlayer.currentAudio!.duration) *
+          100;
         setAudioProgress(progress);
       }, 100);
     } else {
@@ -51,7 +61,7 @@ export function VerseCard({ verse, surahNumber, index }: VerseCardProps) {
     if (isPlaying) {
       const element = document.getElementById(`verse-${index}`);
       if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        element.scrollIntoView({ behavior: "smooth", block: "center" });
       }
     }
   }, [isPlaying, index]);
@@ -67,7 +77,7 @@ export function VerseCard({ verse, surahNumber, index }: VerseCardProps) {
   const handleBookmark = () => {
     toggleBookmark(surahNumber, verse.number, note);
     if (!bookmark && note) {
-      setNote('');
+      setNote("");
       setShowNoteInput(false);
     }
   };
@@ -83,7 +93,7 @@ export function VerseCard({ verse, surahNumber, index }: VerseCardProps) {
   };
 
   return (
-    <div 
+    <div
       id={`verse-${index}`}
       className={cn(
         "bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm transition-colors duration-300",
@@ -104,7 +114,7 @@ export function VerseCard({ verse, surahNumber, index }: VerseCardProps) {
                     key={i}
                     className="inline-block w-0.5 h-2 bg-emerald-600 dark:bg-emerald-400 animate-waveform"
                     style={{
-                      animationDelay: `${i * 0.2}s`
+                      animationDelay: `${i * 0.2}s`,
                     }}
                   />
                 ))}
@@ -122,7 +132,11 @@ export function VerseCard({ verse, surahNumber, index }: VerseCardProps) {
                 : "text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400"
             )}
           >
-            {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
+            {isPlaying ? (
+              <Pause className="h-5 w-5" />
+            ) : (
+              <Play className="h-5 w-5" />
+            )}
           </button>
           <button
             onClick={handleBookmark}
@@ -158,7 +172,7 @@ export function VerseCard({ verse, surahNumber, index }: VerseCardProps) {
       {showNoteInput && (
         <form onSubmit={handleNoteSubmit} className="mb-4">
           <textarea
-            value={note || bookmark?.note || ''}
+            value={note || bookmark?.note || ""}
             onChange={(e) => setNote(e.target.value)}
             placeholder="Tambahkan catatan..."
             className="w-full p-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 mb-2"
@@ -184,56 +198,37 @@ export function VerseCard({ verse, surahNumber, index }: VerseCardProps) {
 
       {bookmark?.note && !showNoteInput && (
         <div className="mb-4 p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg">
-          <p className="text-sm text-emerald-800 dark:text-emerald-200">{bookmark.note}</p>
+          <p className="text-sm text-emerald-800 dark:text-emerald-200">
+            {bookmark.note}
+          </p>
         </div>
       )}
 
       <div className="relative">
-        <p 
+        <p
           className="text-right mb-4 font-arabic leading-loose"
           style={{
             fontFamily: settings.font,
-            fontSize: `${settings.fontSize}px`
+            fontSize: `${settings.fontSize}px`,
           }}
         >
           {verse.text}
         </p>
         {isPlaying && (
-          <div 
+          <div
             className="absolute bottom-0 left-0 h-0.5 bg-emerald-500 dark:bg-emerald-400 transition-all duration-200"
             style={{ width: `${audioProgress}%` }}
           />
         )}
       </div>
 
-      {readingMode !== 'arabic-only' && (
+      {readingMode !== "arabic-only" && (
         <p className="text-gray-600 dark:text-gray-300 mb-4">
           {verse.translation}
         </p>
       )}
 
-      <div className="border-t dark:border-gray-700 pt-4">
-        <button
-          onClick={() => setShowTafsir(!showTafsir)}
-          className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-        >
-          <MessageSquare className="h-4 w-4" />
-          <span>Tafsir</span>
-          {showTafsir ? (
-            <ChevronUp className="h-4 w-4" />
-          ) : (
-            <ChevronDown className="h-4 w-4" />
-          )}
-        </button>
-        
-        {showTafsir && (
-          <div className="mt-4 space-y-2">
-            <p className="text-sm text-gray-600 dark:text-gray-300">
-              {verse.tafsir}
-            </p>
-          </div>
-        )}
-      </div>
+      <div className="border-t dark:border-gray-700 pt-4"></div>
     </div>
   );
 }
