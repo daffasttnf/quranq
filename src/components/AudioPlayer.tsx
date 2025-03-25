@@ -7,6 +7,7 @@ export function AudioPlayer() {
   const { 
     audioPlayer, 
     currentVerses,
+    currentSurahInfo,
     playAudio,
     pauseAudio,
     toggleAutoPlay
@@ -87,7 +88,10 @@ export function AudioPlayer() {
         <div className="flex-1 mx-6">
           <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
             {audioPlayer.currentVerseIndex !== -1 ? (
-              <>Ayat {currentVerses[audioPlayer.currentVerseIndex]?.number}</>
+              <>
+                {currentSurahInfo?.nameArabic} • {currentSurahInfo?.englishName} • 
+                Ayat {currentVerses[audioPlayer.currentVerseIndex]?.number}
+              </>
             ) : (
               'Pilih ayat untuk diputar'
             )}

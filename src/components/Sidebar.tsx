@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Book, Search, BookOpen, Layers, ChevronLeft, Bookmark, Settings as SettingsIcon } from 'lucide-react';
+import { Book, Search, BookOpen, Layers, ChevronLeft, Bookmark } from 'lucide-react';
 import { useQuranStore } from '../store/quranStore';
 import { cn } from '../lib/utils';
 import { useSwipeable } from 'react-swipeable';
@@ -68,17 +68,6 @@ export function Sidebar() {
             </div>
           </div>
 
-          <div className="relative mb-6">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <input
-              type="search"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Cari surah..."
-              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            />
-          </div>
-
           {bookmarks.length > 0 && (
             <div className="mb-6 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg p-4">
               <div className="flex items-center gap-2 mb-3">
@@ -113,6 +102,17 @@ export function Sidebar() {
               </div>
             </div>
           )}
+
+          <div className="relative mb-6">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <input
+              type="search"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Cari surah..."
+              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            />
+          </div>
 
           <div className="flex gap-2 mb-4">
             <button

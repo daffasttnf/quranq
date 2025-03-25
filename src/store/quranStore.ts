@@ -5,10 +5,9 @@ import { fetchSurah, fetchJuz, fetchSurahList } from '../services/quranAPI';
 import { toPng } from 'html-to-image';
 
 const defaultSettings: Settings = {
-  font: 'KFGQPC Uthmanic Script HAFS',
-  reciter: 'coming.soon',
-  fontSize: 32,
-  language: 'id'
+  font: 'Amiri',
+  reciter: 'ar.alafasy',
+  fontSize: 32
 };
 
 export const useQuranStore = create<QuranState>()(

@@ -2,7 +2,6 @@ export interface Verse {
   number: number;
   text: string;
   translation: string;
-  tafsir: string;
   audioUrl: string;
   surah?: number;
 }
@@ -43,13 +42,9 @@ export interface Bookmark {
 
 export type ReadingMode = 'arabic-only' | 'with-translation';
 
-export type Reciter = 'coming.soon';
-
 export interface Settings {
   font: string;
-  reciter: Reciter;
   fontSize: number;
-  language: string;
 }
 
 export interface QuranState {
@@ -83,5 +78,4 @@ export interface QuranState {
   toggleAutoPlay: () => void;
   setReadingMode: (mode: ReadingMode) => void;
   updateSettings: (settings: Partial<Settings>) => void;
-  shareVerse: (verse: Verse, surahNumber: number) => Promise<void>;
 }
